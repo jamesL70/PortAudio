@@ -66,8 +66,8 @@ namespace PortAudioTest
                 if (phase >= 2.0 * Math.PI)
                     phase -= (float) (2.0 * Math.PI);
 
-                dataI[i] = (float) Math.Cos(phase);
-                dataQ[i] = (float) Math.Sin(phase);
+                dataI[i] = (float) (0.15 * Math.Cos(phase));
+                dataQ[i] = (float) (0.15 * Math.Sin(phase));
             }
 
             // Get output buffers
@@ -88,6 +88,8 @@ namespace PortAudioTest
             phaseIncrement = (float) (2.0 * Math.PI * frequency / sampleRate); 
 
             thisPtr = this;
+
+            this.trackBarFrequency.Value = (int) frequency;
         }
 
         private void Form1_Load(object sender, EventArgs e)
@@ -205,6 +207,12 @@ namespace PortAudioTest
             
             this.deviceNumber = PortAudio.NativeMethods.Pa_HostApiDeviceIndexToDeviceIndex(hostApi, hostApiDeviceNumber);
             this.textBox3.Text = deviceNumber.ToString();
+        }
+
+        private void trackBarFrequency_Scroll(object sender, EventArgs e)
+        {
+            frequency = this.trackBarFrequency.Value;
+            phaseIncrement = (float) (2.0 * Math.PI * frequency / sampleRate); 
         }
     }
 }

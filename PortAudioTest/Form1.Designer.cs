@@ -38,6 +38,8 @@
             this.Errror = new System.Windows.Forms.TextBox();
             this.label1 = new System.Windows.Forms.Label();
             this.textBox3 = new System.Windows.Forms.TextBox();
+            this.trackBarFrequency = new System.Windows.Forms.TrackBar();
+            ((System.ComponentModel.ISupportInitialize)(this.trackBarFrequency)).BeginInit();
             this.SuspendLayout();
             // 
             // comboBoxHostApi
@@ -133,11 +135,22 @@
             this.textBox3.Size = new System.Drawing.Size(100, 20);
             this.textBox3.TabIndex = 11;
             // 
+            // trackBarFrequency
+            // 
+            this.trackBarFrequency.Location = new System.Drawing.Point(287, 74);
+            this.trackBarFrequency.Maximum = 4000;
+            this.trackBarFrequency.Name = "trackBarFrequency";
+            this.trackBarFrequency.Size = new System.Drawing.Size(199, 45);
+            this.trackBarFrequency.TabIndex = 12;
+            this.trackBarFrequency.TickFrequency = 100;
+            this.trackBarFrequency.Scroll += new System.EventHandler(this.trackBarFrequency_Scroll);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(522, 498);
+            this.Controls.Add(this.trackBarFrequency);
             this.Controls.Add(this.textBox3);
             this.Controls.Add(this.label1);
             this.Controls.Add(this.Errror);
@@ -153,6 +166,7 @@
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.Form1_FormClosing);
             this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.Form1_FormClosed);
             this.Load += new System.EventHandler(this.Form1_Load);
+            ((System.ComponentModel.ISupportInitialize)(this.trackBarFrequency)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -170,6 +184,7 @@
         private System.Windows.Forms.TextBox Errror;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.TextBox textBox3;
+        private System.Windows.Forms.TrackBar trackBarFrequency;
     }
 }
 
