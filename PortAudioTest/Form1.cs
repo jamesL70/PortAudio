@@ -24,13 +24,7 @@ OTHER DEALINGS IN THE SOFTWARE.
 */
 
 using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Diagnostics;
 using System.Runtime.InteropServices;
-using System.Text;
 using System.Windows.Forms;
 
 namespace PortAudioTest
@@ -44,16 +38,19 @@ namespace PortAudioTest
         const float sampleRate = 44100F;
         float frequency = 1000.0F;
 
-        static Form1 thisPtr;
+        GCHandle thisPtr;
 
-        static float phaseIncrement;
-        static float phase;
+        double phaseIncrement;
+        double phase;
 
         bool stopFlag;
         int deviceNumber;
 
         public static PortAudio.PaStreamCallbackResult PortAudioCallbackNonInterleaved(IntPtr input, IntPtr output, UInt32 frameCount, IntPtr timeInfo, UInt32 statusFlags, IntPtr userData)
         {
+            GCHandle h = GCHandle.FromIntPtr(userData);
+            Form1 thisPtr = h.Target as Form1;
+
             PortAudio.PaStreamCallbackResult result = thisPtr.stopFlag ? PortAudio.PaStreamCallbackResult.paComplete : PortAudio.PaStreamCallbackResult.paContinue;
 
             float[] dataI = new float[frameCount];
@@ -61,13 +58,11 @@ namespace PortAudioTest
 
             for (int i = 0; i < frameCount; i++)
             {
-                phase += phaseIncrement;
+                thisPtr.phase += thisPtr.phaseIncrement;
+                thisPtr.phase %= 2.0 * Math.PI;
 
-                if (phase >= 2.0 * Math.PI)
-                    phase -= (float) (2.0 * Math.PI);
-
-                dataI[i] = (float) (0.15 * Math.Cos(phase));
-                dataQ[i] = (float) (0.15 * Math.Sin(phase));
+                dataI[i] = (float) (0.15 * Math.Cos(thisPtr.phase));
+                dataQ[i] = (float) (0.15 * Math.Sin(thisPtr.phase));
             }
 
             // Get output buffers
@@ -87,7 +82,7 @@ namespace PortAudioTest
 
             phaseIncrement = (float) (2.0 * Math.PI * frequency / sampleRate); 
 
-            thisPtr = this;
+            this.thisPtr = GCHandle.Alloc(this);
 
             this.trackBarFrequency.Value = (int) frequency;
         }
@@ -151,6 +146,8 @@ namespace PortAudioTest
         {
             if (button1.Text == "Start")
             {
+                this.Errror.Text = string.Empty;
+
                 PortAudio.PaStreamParameters outputParameters = new PortAudio.PaStreamParameters();
                 outputParameters.channelCount = 2;
                 outputParameters.device = deviceNumber;
@@ -158,7 +155,7 @@ namespace PortAudioTest
                 outputParameters.sampleFormat = PortAudio.PaSampleFormat.paFloat32 | PortAudio.PaSampleFormat.paNonInterleaved;
                 outputParameters.suggestedLatency = 0;
 
-                int result = PortAudio.NativeMethods.Pa_OpenStream(out this.stream, null, outputParameters, sampleRate, 2048, 0, callback, IntPtr.Zero);
+                int result = PortAudio.NativeMethods.Pa_OpenStream(out this.stream, null, outputParameters, sampleRate, 2048, 0, callback, GCHandle.ToIntPtr(this.thisPtr));
                 if (result != 0)
                 {
                     this.Errror.Text = PortAudio.NativeMethods.Pa_GetErrorText(result);
@@ -196,6 +193,8 @@ namespace PortAudioTest
                 PortAudio.NativeMethods.Pa_StopStream(stream);
                 PortAudio.NativeMethods.Pa_CloseStream(this.stream);
             }
+
+            this.thisPtr.Free();
 
             PortAudio.NativeMethods.Pa_Terminate();
         }

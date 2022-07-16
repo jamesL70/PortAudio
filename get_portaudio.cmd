@@ -1,3 +1,3 @@
-pushd .\portaudio
-svn.exe co https://subversion.assembla.com/svn/portaudio/portaudio/trunk  .
-popd
+
+git clone https://github.com/PortAudio/portaudio.git PortAudio
+

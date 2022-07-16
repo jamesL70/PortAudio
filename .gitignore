@@ -7,4 +7,5 @@
 ipch/
 */bin
 */obj
-*/.svn
+.git
+.vs
